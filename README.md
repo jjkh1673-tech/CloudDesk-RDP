@@ -350,7 +350,7 @@ Open a Python file:
 
 ```bash
 nano script.py
-
+```
 ---
 
 ## 🚀 Performance Tips
