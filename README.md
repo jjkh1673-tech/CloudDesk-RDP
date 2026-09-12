@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/Browser-Firefox_ESR-FF7139?style=flat-square&logo=firefox&logoColor=white" alt="Firefox ESR"/>
   <img src="https://img.shields.io/badge/RDP-XRDP%20%2B%20Xorg-0078D4?style=flat-square&logo=windows&logoColor=white" alt="XRDP"/>
   <img src="https://img.shields.io/badge/Maintained-Yes-2EA44F?style=flat-square" alt="Maintained"/>
-  <img src="https://img.shields.io/github/stars/username/CloudDesk-RDP?style=flat-square&logo=github&color=yellow" alt="GitHub Stars"/>
+  <img src="https://img.shields.io/github/stars/jjkh1673-tech/CloudDesk-RDP?style=flat-square&logo=github&color=yellow" alt="GitHub Stars"/>
 </p>
 
 <p align="center">
