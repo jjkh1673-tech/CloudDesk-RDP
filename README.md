@@ -425,8 +425,8 @@ even for commercial purposes, as long as you include the original license.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/username/CloudDesk-RDP?style=social" alt="GitHub Stars"/>
-  <img src="https://img.shields.io/github/forks/username/CloudDesk-RDP?style=social" alt="GitHub Forks"/>
+  <img src="https://img.shields.io/github/stars/jjkh1673-tech/CloudDesk-RDP?style=social" alt="GitHub Stars"/>
+  <img src="https://img.shields.io/github/forks/jjkh1673-tech/CloudDesk-RDP?style=social" alt="GitHub Forks"/>
 </p>
 
 <p align="center">
