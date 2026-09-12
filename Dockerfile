@@ -112,7 +112,7 @@ RUN if id ubuntu >/dev/null 2>&1; then \
                  /home/ubuntu/.config/plank/dock1/launchers \
     && chown -R ubuntu:ubuntu /home/ubuntu
 
-# XRDP -> D-Bus session -> clean XFCE session.
+# XRDP -> D-Bus -> XFCE session.
 RUN printf '%s\n' \
     '#!/bin/sh' \
     'export LANG=C.UTF-8' \
@@ -123,12 +123,28 @@ RUN printf '%s\n' \
     'export DESKTOP_SESSION=xfce' \
     'unset DBUS_SESSION_BUS_ADDRESS' \
     'unset XDG_RUNTIME_DIR' \
-    'exec dbus-run-session -- sh -c "xfce4-panel --quit >/dev/null 2>&1 || true; exec startxfce4"' \
+    'exec dbus-run-session -- startxfce4' \
     > /etc/xrdp/startwm.sh \
     && chmod 755 /etc/xrdp/startwm.sh \
     && printf '%s\n' 'startxfce4' > /home/ubuntu/.xsession \
     && chown ubuntu:ubuntu /home/ubuntu/.xsession
 
+# Disable XFCE panel from the user's session.
+RUN mkdir -p /home/ubuntu/.config/autostart \
+    && printf '%s\n' \
+       '[Desktop Entry]' \
+       'Type=Application' \
+       'Name=XFCE Panel' \
+       'Comment=Disabled for CloudDesk macOS-style dock' \
+       'Exec=xfce4-panel' \
+       'Hidden=true' \
+       'OnlyShowIn=XFCE;' \
+       'X-GNOME-Autostart-enabled=false' \
+       > /home/ubuntu/.config/autostart/xfce4-panel.desktop \
+    && rm -rf /home/ubuntu/.cache/sessions \
+    && chown -R ubuntu:ubuntu /home/ubuntu/.config /home/ubuntu/.cache
+
+    
 # Clean macOS-style left dock:
 # Desktop, Trash, Settings, Firefox, Files, Terminal only.
 RUN mkdir -p \
