@@ -327,6 +327,30 @@ sudo apt install python3-pip
 2.  Commit & Push to GitHub
 3.  Railway auto-redeploys with the new app included.
 
+## Smart Nano Editor
+
+CloudDesk includes a preconfigured Nano editor for editing scripts, configuration files and text-based files directly from Terminal.
+
+Nano is configured with:
+
+- Line numbers
+- Mouse support
+- Click-to-place cursor
+- Four spaces per Tab
+- Automatic indentation
+- Syntax highlighting for supported file types
+- Constant cursor-position display
+- Soft wrapping for long lines
+- Better source-code navigation
+- Matching bracket display where supported
+
+### Examples
+
+Open a Python file:
+
+```bash
+nano script.py
+
 ---
 
 ## 🚀 Performance Tips
