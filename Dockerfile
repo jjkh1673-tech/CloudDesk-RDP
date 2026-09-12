@@ -130,7 +130,9 @@ RUN printf '%s\n' \
     && chown ubuntu:ubuntu /home/ubuntu/.xsession
 
 # Disable XFCE panel from the user's session.
-RUN mkdir -p /home/ubuntu/.config/autostart \
+RUN mkdir -p \
+        /home/ubuntu/.config/autostart \
+        /home/ubuntu/.cache \
     && printf '%s\n' \
        '[Desktop Entry]' \
        'Type=Application' \
@@ -142,7 +144,9 @@ RUN mkdir -p /home/ubuntu/.config/autostart \
        'X-GNOME-Autostart-enabled=false' \
        > /home/ubuntu/.config/autostart/xfce4-panel.desktop \
     && rm -rf /home/ubuntu/.cache/sessions \
-    && chown -R ubuntu:ubuntu /home/ubuntu/.config /home/ubuntu/.cache
+    && chown -R ubuntu:ubuntu \
+        /home/ubuntu/.config \
+        /home/ubuntu/.cache
 
     
 # Clean macOS-style left dock:
