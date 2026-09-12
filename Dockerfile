@@ -34,6 +34,45 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Smart Nano configuration for coding, scripts and file management.
+RUN cat >> /etc/nanorc <<'EOF'
+
+# ===== CloudDesk Nano =====
+
+# Always show line numbers.
+set linenumbers
+
+# Show cursor position.
+set constantshow
+
+# Mouse support: click inside the editor to place the cursor.
+set mouse
+
+# Four spaces per indentation level.
+set tabsize 4
+set tabstospaces
+
+# Automatically indent new lines.
+set autoindent
+
+# Keep long code lines readable without modifying the file.
+set softwrap
+
+# Do not automatically hard-wrap source code.
+set nowrap
+
+# Better navigation and editing.
+set smarthome
+set atblanks
+
+# Show matching brackets more clearly when supported.
+set matchbrackets "{}()[]"
+
+# Enable syntax highlighting from the installed nano syntax files.
+include "/usr/share/nano/*.nanorc"
+
+EOF
+
 # Ubuntu 24.04 provides Firefox as a Snap transition package, which is not
 # suitable for this systemd-free container. Install Mozilla's official
 # Firefox ESR Linux tarball instead.
