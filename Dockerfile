@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfce4 \
     xfce4-terminal \
     thunar \
+    ubuntu-wallpapers-noble \
     thunar-archive-plugin \
     thunar-volman \
     xrdp \
@@ -111,7 +112,7 @@ RUN if id ubuntu >/dev/null 2>&1; then \
                  /home/ubuntu/.config/plank/dock1/launchers \
     && chown -R ubuntu:ubuntu /home/ubuntu
 
-# XRDP -> D-Bus session -> XFCE.
+# XRDP -> D-Bus session -> clean XFCE session.
 RUN printf '%s\n' \
     '#!/bin/sh' \
     'export LANG=C.UTF-8' \
@@ -122,18 +123,24 @@ RUN printf '%s\n' \
     'export DESKTOP_SESSION=xfce' \
     'unset DBUS_SESSION_BUS_ADDRESS' \
     'unset XDG_RUNTIME_DIR' \
-    'exec dbus-run-session -- startxfce4' \
+    'exec dbus-run-session -- sh -c "xfce4-panel --quit >/dev/null 2>&1 || true; exec startxfce4"' \
     > /etc/xrdp/startwm.sh \
     && chmod 755 /etc/xrdp/startwm.sh \
     && printf '%s\n' 'startxfce4' > /home/ubuntu/.xsession \
     && chown ubuntu:ubuntu /home/ubuntu/.xsession
 
-# Minimal left-side macOS-inspired dock: Firefox, Files, Terminal, Trash.
-RUN printf '%s\n' \
+# Clean macOS-style left dock:
+# Desktop, Trash, Settings, Firefox, Files, Terminal only.
+RUN mkdir -p \
+    /home/ubuntu/.config/plank/dock1/launchers \
+    /home/ubuntu/.config/autostart \
+    /home/ubuntu/.local/share/applications \
+    && printf '%s\n' \
     '[PlankDockPreferences]' \
-    'IconSize=44' \
+    'IconSize=60' \
     'HideMode=0' \
     'UnhideDelay=0' \
+    'HideDelay=0' \
     'Monitor=-1' \
     'Position=0' \
     'Offset=0' \
@@ -141,22 +148,35 @@ RUN printf '%s\n' \
     'Alignment=3' \
     'ItemsAlignment=3' \
     'CurrentWorkspaceOnly=false' \
-    'ZoomEnabled=false' \
-    'LockItems=false' \
-    'DockItems=firefox-esr.dockitem;thunar.dockitem;xfce4-terminal.dockitem;trash.dockitem' \
+    'ZoomEnabled=true' \
+    'ZoomPercent=120' \
+    'LockItems=true' \
+    'DockItems=desktop.dockitem;trash.dockitem;settings.dockitem;firefox-esr.dockitem;thunar.dockitem;xfce4-terminal.dockitem' \
     > /home/ubuntu/.config/plank/dock1/settings \
-    && for item in firefox-esr thunar xfce4-terminal; do \
-         if [ -f "/usr/share/applications/$item.desktop" ]; then \
-           printf '%s\n' \
-             '[PlankItemsDockItemPreferences]' \
-             "Launcher=file:///usr/share/applications/$item.desktop" \
-             > "/home/ubuntu/.config/plank/dock1/launchers/$item.dockitem"; \
-         fi; \
-       done \
+    && printf '%s\n' \
+       '[PlankItemsDockItemPreferences]' \
+       'Launcher=application://org.xfce.xfdesktop-settings.desktop' \
+       > /home/ubuntu/.config/plank/dock1/launchers/settings.dockitem \
+    && printf '%s\n' \
+       '[PlankItemsDockItemPreferences]' \
+       'Launcher=docklet://desktop' \
+       > /home/ubuntu/.config/plank/dock1/launchers/desktop.dockitem \
     && printf '%s\n' \
        '[PlankItemsDockItemPreferences]' \
        'Launcher=docklet://trash' \
        > /home/ubuntu/.config/plank/dock1/launchers/trash.dockitem \
+    && printf '%s\n' \
+       '[PlankItemsDockItemPreferences]' \
+       'Launcher=file:///usr/share/applications/firefox-esr.desktop' \
+       > /home/ubuntu/.config/plank/dock1/launchers/firefox-esr.dockitem \
+    && printf '%s\n' \
+       '[PlankItemsDockItemPreferences]' \
+       'Launcher=file:///usr/share/applications/thunar.desktop' \
+       > /home/ubuntu/.config/plank/dock1/launchers/thunar.dockitem \
+    && printf '%s\n' \
+       '[PlankItemsDockItemPreferences]' \
+       'Launcher=file:///usr/share/applications/xfce4-terminal.desktop' \
+       > /home/ubuntu/.config/plank/dock1/launchers/xfce4-terminal.dockitem \
     && printf '%s\n' \
        '[Desktop Entry]' \
        'Type=Application' \
@@ -165,13 +185,23 @@ RUN printf '%s\n' \
        'OnlyShowIn=XFCE;' \
        'X-GNOME-Autostart-enabled=true' \
        > /home/ubuntu/.config/autostart/plank.desktop \
-    && chown -R ubuntu:ubuntu /home/ubuntu/.config
+    && chown -R ubuntu:ubuntu /home/ubuntu/.config /home/ubuntu/.local
 
-# RDP performance defaults: no compositor, no screen blanking.
+# Clean desktop: no Home/File System/Trash icons and no XFCE panel.
 RUN runuser -u ubuntu -- dbus-run-session -- sh -c '\
-    xfconf-query -c xfwm4 -p /general/use_compositing -s false || true; \
-    xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0 || true; \
-    xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false || true'
+    xfconf-query -c xfce4-desktop -p /desktop-icons/style -s 0 || true; \
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -s false || true; \
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-home -s false || true; \
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false || true; \
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-removable -s false || true'
+    
+# Use an official Ubuntu 24.04 wallpaper as the native desktop background.
+RUN runuser -u ubuntu -- dbus-run-session -- sh -c '\
+    WALL=$(find /usr/share/backgrounds -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | head -n 1); \
+    if [ -n "$WALL" ]; then \
+        xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-path -s "$WALL" || true; \
+        xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-style -s 5 || true; \
+    fi'
 
 # No interactive crash-report popup inside the container.
 RUN mkdir -p /etc/default \
